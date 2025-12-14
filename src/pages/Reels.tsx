@@ -71,106 +71,125 @@ export default function ReelsPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-foreground lg:left-[72px] xl:left-[244px]">
+    <div className="fixed inset-0 top-16 bg-black md:top-16">
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="h-full snap-y snap-mandatory overflow-y-auto scrollbar-hide"
+        className="h-full snap-y snap-mandatory overflow-y-auto"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {mockReels.map((reel, index) => (
+        {mockReels.map((reel) => (
           <div
             key={reel.id}
-            className="relative h-full w-full snap-start"
+            className="relative flex h-full w-full snap-start items-center justify-center"
           >
-            {/* Background Image (simulating video) */}
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${reel.mediaUrl})` }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-foreground/60" />
-            </div>
+            {/* Reel Container - Centered with proper aspect ratio */}
+            <div className="relative h-full w-full max-w-[500px] md:h-[calc(100vh-80px)] md:max-h-[900px]">
+              {/* Background Image (simulating video) */}
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${reel.mediaUrl})` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+              </div>
 
-            {/* Content Overlay */}
-            <div className="absolute inset-0 flex">
-              {/* Left Side - Caption */}
-              <div className="flex flex-1 flex-col justify-end p-4 pb-20 lg:pb-6">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="max-w-[70%] space-y-3"
-                >
-                  <div className="flex items-center gap-3">
+              {/* Content Overlay */}
+              <div className="absolute inset-0 flex">
+                {/* Left Side - Caption */}
+                <div className="flex flex-1 flex-col justify-end p-4 pb-24 md:pb-8">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="max-w-[75%] space-y-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={reel.avatar}
+                        alt={reel.username}
+                        className="h-10 w-10 rounded-full border-2 border-white object-cover"
+                      />
+                      <span className="font-semibold text-white">
+                        {reel.username}
+                      </span>
+                      <button className="rounded-lg border border-white/50 px-3 py-1 text-xs font-medium text-white hover:bg-white/10">
+                        Follow
+                      </button>
+                    </div>
+                    <p className="text-sm text-white/90">{reel.caption}</p>
+                    <div className="flex items-center gap-2 text-xs text-white/70">
+                      <Music className="h-3 w-3" />
+                      <span className="truncate">{reel.audioName}</span>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Right Side - Actions */}
+                <div className="flex flex-col items-center justify-end gap-5 p-4 pb-24 md:pb-8">
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleLike(reel.id)}
+                    className="flex flex-col items-center gap-1"
+                  >
+                    <div className="rounded-full bg-black/30 p-3 backdrop-blur-sm">
+                      <Heart
+                        className={cn(
+                          'h-7 w-7 text-white transition-all',
+                          likedReels.has(reel.id) && 'fill-red-500 text-red-500'
+                        )}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-white">
+                      {(reel.likesCount + (likedReels.has(reel.id) ? 1 : 0)).toLocaleString()}
+                    </span>
+                  </motion.button>
+
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    className="flex flex-col items-center gap-1"
+                  >
+                    <div className="rounded-full bg-black/30 p-3 backdrop-blur-sm">
+                      <MessageCircle className="h-7 w-7 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-white">
+                      {reel.commentsCount.toLocaleString()}
+                    </span>
+                  </motion.button>
+
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    className="flex flex-col items-center gap-1"
+                  >
+                    <div className="rounded-full bg-black/30 p-3 backdrop-blur-sm">
+                      <Send className="h-7 w-7 text-white" />
+                    </div>
+                    <span className="text-xs font-medium text-white">Share</span>
+                  </motion.button>
+
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setIsMuted(!isMuted)}
+                    className="rounded-full bg-black/30 p-3 backdrop-blur-sm"
+                  >
+                    {isMuted ? (
+                      <VolumeX className="h-5 w-5 text-white" />
+                    ) : (
+                      <Volume2 className="h-5 w-5 text-white" />
+                    )}
+                  </motion.button>
+
+                  {/* User Avatar */}
+                  <div className="relative">
                     <img
                       src={reel.avatar}
                       alt={reel.username}
-                      className="h-10 w-10 rounded-full border-2 border-background object-cover"
+                      className="h-12 w-12 rounded-lg border-2 border-white object-cover"
                     />
-                    <span className="font-semibold text-background">
-                      {reel.username}
-                    </span>
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-red-500 p-0.5">
+                      <span className="text-[10px] font-bold text-white">+</span>
+                    </div>
                   </div>
-                  <p className="text-sm text-background/90">{reel.caption}</p>
-                  <div className="flex items-center gap-2 text-xs text-background/70">
-                    <Music className="h-3 w-3" />
-                    <span>{reel.audioName}</span>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Right Side - Actions */}
-              <div className="flex flex-col items-center justify-end gap-6 p-4 pb-20 lg:pb-6">
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => handleLike(reel.id)}
-                  className="flex flex-col items-center gap-1"
-                >
-                  <div className="rounded-full bg-background/20 p-3 backdrop-blur-sm">
-                    <Heart
-                      className={cn(
-                        'h-7 w-7 text-background transition-all',
-                        likedReels.has(reel.id) && 'fill-destructive text-destructive'
-                      )}
-                    />
-                  </div>
-                  <span className="text-xs font-medium text-background">
-                    {(reel.likesCount + (likedReels.has(reel.id) ? 1 : 0)).toLocaleString()}
-                  </span>
-                </motion.button>
-
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  className="flex flex-col items-center gap-1"
-                >
-                  <div className="rounded-full bg-background/20 p-3 backdrop-blur-sm">
-                    <MessageCircle className="h-7 w-7 text-background" />
-                  </div>
-                  <span className="text-xs font-medium text-background">
-                    {reel.commentsCount.toLocaleString()}
-                  </span>
-                </motion.button>
-
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  className="flex flex-col items-center gap-1"
-                >
-                  <div className="rounded-full bg-background/20 p-3 backdrop-blur-sm">
-                    <Send className="h-7 w-7 text-background" />
-                  </div>
-                  <span className="text-xs font-medium text-background">Share</span>
-                </motion.button>
-
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="rounded-full bg-background/20 p-3 backdrop-blur-sm"
-                >
-                  {isMuted ? (
-                    <VolumeX className="h-5 w-5 text-background" />
-                  ) : (
-                    <Volume2 className="h-5 w-5 text-background" />
-                  )}
-                </motion.button>
+                </div>
               </div>
             </div>
           </div>
@@ -178,13 +197,13 @@ export default function ReelsPage() {
       </div>
 
       {/* Progress Indicator */}
-      <div className="absolute right-4 top-1/2 hidden -translate-y-1/2 flex-col gap-1 lg:flex">
+      <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 flex-col gap-2 md:flex">
         {mockReels.map((_, index) => (
           <div
             key={index}
             className={cn(
-              'h-1 w-1 rounded-full transition-all',
-              index === currentIndex ? 'h-4 bg-background' : 'bg-background/40'
+              'w-1 rounded-full transition-all duration-300',
+              index === currentIndex ? 'h-6 bg-white' : 'h-1 bg-white/40'
             )}
           />
         ))}
